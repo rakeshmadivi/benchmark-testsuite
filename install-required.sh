@@ -18,7 +18,9 @@ checkbinary(){
 }
 
 # Display some message
-disp_msg(){echo -e "\t$@"}
+disp_msg(){
+	echo -e "\t$@"
+}
 
 # To return success case
 success(){
