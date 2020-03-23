@@ -1,0 +1,30 @@
+#!/bin/bash
+#---------------- GLOBAL VARIABLES --------------------
+
+# Options followed with ':' means option value is required.
+# Options followed with '::' means option value is optional.
+# Options without ':' or '::' means it doesn't accept option value.
+
+SHORT=cjmdnMRNih
+#id-	0	1	2     3	      4      5       6     7	  8
+LONG=speccpu,specjbb,stream,sss-pts,iperf,sysbench,redis,nginx,install,help
+
+longopts=(${LONG//,/ })	# Storing LONG as array
+
+# Respective installation candidate functions
+inst_fun=(install_speccpu install_specjbb install_stream install_ssspts install_iperf install_sysbench install_redisserver install_nginx)
+
+test_fun=(speccpu_tests specjbb_tests stream_tests start-tests.sh iperf_tests new_sysbench_tests redis_tests nginx_tests)
+
+# ids		0	1	2     3	     4	     5     6	 7
+directories=(speccpu specjbb stream ssspts iperf sysbench redis nginx)
+
+actions=()
+tobeinstalled=()
+
+# Variables to be used in various tests
+ncpus=`nproc`
+th_per_core=$(echo `lscpu | grep Thread|cut -f2 -d':'`)
+
+powerstatfile=power_collect.status
+POWERGET=""
