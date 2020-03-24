@@ -43,7 +43,7 @@ check_if_all_files_exists(){
 		local cdir=${directories[$i]}
 		if [ $cdir = "ssspts" ]
 		then
-			local pat=${hdir}/${cdir}/${cdir}
+			local pat=${hdir}/${cdir}/${cdir} # pattern to match Eg: $PWD/ssspts/ssspts-*.sh
 			[ -f ${pat}-test.sh ] && [ -f ${pat}-main.sh ] && [ -f ${pat}-common.sh ] && [ -f ${pat}-iops.sh ] && [ -f ${pat}-tp.sh ] && [ -f ${pat}-latency.sh ]
 			return $?
 		else
