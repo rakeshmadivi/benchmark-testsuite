@@ -37,6 +37,7 @@ source test-executions.sh
 
 check_if_all_files_exists(){
 	hdir=${PWD}
+	echo CHECKING DIRECTORIES: ${directories[@]}
 	for i in ${!directories[@]}
 	do
 		local cdir=${directories[$i]}
@@ -92,7 +93,7 @@ parse(){
 
 	while true
 	do
-		echo Checking $1
+		#echo Checking $1
 		case $1 in
 			-h | --help) 
 				chelp $SHORT $LONG

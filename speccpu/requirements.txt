@@ -1,0 +1,2 @@
+Please refer: 
+https://www.spec.org/cpu2017/Docs/system-requirements.html
