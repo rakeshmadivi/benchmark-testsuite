@@ -81,6 +81,10 @@ redfishPowerReading(){
 }
 
 redfishPowerCollectionOn(){
+	# Get BMC IP 
+	[ $# -eq 0 ] && read -p "Enter BMC IP of Redfish server: " bmc_ip
+	[ "$bmc_ip" = "" ] && echo -e "No BMC IP provided. Skipping Redfish Power Collection." && return 1
+	
         redfishPowerFile=redfish-power-stats.txt
 
         if [ -f "$powerstatfile" ];then
@@ -90,14 +94,14 @@ redfishPowerCollectionOn(){
 
         while true
         do
-                redfishPowerReading $1 >> $redfishPowerFile
+                redfishPowerReading $bmc_ip >> $redfishPowerFile
                 if [ -f "$powerstatfile" ];then
                         if [ "`cat $powerstatfile`" = "STOP" ] ;then
                                 echo -e "Got STOP Command...\nSTOPPING power collection...\n"
                                 exit
                         fi
                 else
-                        echo -en "\r[ Redfish ] Collecting Power Consumption on: $1 ..."
+                        echo -en "\r[ Redfish ] Collecting Power Consumption on: $bmc_ip ..."
                 fi
 
                 sleep 30
