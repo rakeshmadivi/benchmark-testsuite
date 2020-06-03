@@ -90,7 +90,8 @@ function specjbb_tests()
     read op
     if [ "$op" = "y" ];then
       echo -e "Starting Power Collection..."
-      start_power_collection &
+      #start_power_collection &
+      redfishPowerCollectionOn &
 
       echo -e "Starting SPECJBB ...."
       time sudo ./run_multi.sh
