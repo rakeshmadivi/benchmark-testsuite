@@ -67,3 +67,39 @@ function start_power_collection()
     done
   fi    
 }
+
+# Power Collection using Redfish API
+redfishPowerReading(){
+        [ $# -ne 1 ] && echo -e "Error: BMC IP is not provided." && exit
+        bmcIP=$1
+        powerConsumed=$(curl -skL https://${bmcIP}/redfish/v1/Chassis/Self/Power -u admin:password | jq '.PowerControl[0]|.PowerConsumedWatts')
+        powerMetrics=( $(echo $(curl -skL https://${bmcIP}/redfish/v1/Chassis/Self/Power -u admin:password | jq '.PowerControl[0]|.PowerMetrics' | tr -d [{},\"] | awk '{print $2}')) )
+        avgP=${powerMetrics[0]}
+        maxP=${powerMetrics[2]}
+        minP=${powerMetrics[3]}
+        echo -e "$(date +%D-%T),$powerConsumed,$avgP,$minP,$maxP"
+}
+
+redfishPowerCollectionOn(){
+        redfishPowerFile=redfish-power-stats.txt
+
+        if [ -f "$powerstatfile" ];then
+                echo Removing Existing power status file...
+                rm -rf $powerstatfile
+        fi
+
+        while true
+        do
+                redfishPowerReading $1 >> $redfishPowerFile
+                if [ -f "$powerstatfile" ];then
+                        if [ "`cat $powerstatfile`" = "STOP" ] ;then
+                                echo -e "Got STOP Command...\nSTOPPING power collection...\n"
+                                exit
+                        fi
+                else
+                        echo -en "\r[ Redfish ] Collecting Power Consumption on: $1 ..."
+                fi
+
+                sleep 30
+        done
+}
