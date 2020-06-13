@@ -58,16 +58,16 @@ function speccpu_tests()
         
         pin=`cat /sys/devices/system/cpu/cpu1/topology/thread_siblings_list`
         echo -e "Running $i with PINNING: ${pin}"
-        time numactl -C ${pin} -l runcpu -c $cfgfile --tune=base --copies=$copies --threads=$threads --reportable $i
+        time numactl -C ${pin} -l runcpu -c $cfgfile --tune=base --copies=$copies --threads=$threads --reportable --iterations=3 $i
         
         echo -e "Running $i with NO_PINNING"
-        time runcpu -c $cfgfile --tune=base --copies=$copies --threads=$threads --reportable $i
+        time runcpu -c $cfgfile --tune=base --copies=$copies --threads=$threads --reportable --iterations=3 $i
       
       else
         copies=$ncpus
         threads=1
         echo -e "RUN: $i \nCONFIG: $cfgfile \nCOPIES: $copies THREADS: $threads"
-        time runcpu -c $cfgfile --tune=base --copies=$copies --threads=$threads --reportable $i
+        time runcpu -c $cfgfile --tune=base --copies=$copies --threads=$threads --reportable --iterations=3 $i
       fi
     en=$SECONDS
     echo -e "${i} : Elapsed time - $((en-st)) Seconds."          
