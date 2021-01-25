@@ -58,16 +58,15 @@ function speccpu_tests()
         
         pin=`cat /sys/devices/system/cpu/cpu1/topology/thread_siblings_list`
         echo -e "Running $i with PINNING: ${pin}"
-        time numactl -C ${pin} -l runcpu -c $cfgfile --tune=base --copies=$copies --threads=$threads --reportable --iterations=3 $i
+        time numactl -C ${pin} -l runcpu -c $cfgfile --rebuild --define build_ncpus=$(nproc) --tune=base --copies=$copies --threads=$threads --reportable --iterations=3 $i
         
-        echo -e "Running $i with NO_PINNING"
-        time runcpu -c $cfgfile --tune=base --copies=$copies --threads=$threads --reportable --iterations=3 $i
-      
+        #echo -e "Running $i with NO_PINNING"
+        #time runcpu -c $cfgfile --rebuild --define build_ncpus=$(nproc) --tune=base --copies=$copies --threads=$threads --reportable --iterations=3 $i
       else
         copies=$ncpus
         threads=1
         echo -e "RUN: $i \nCONFIG: $cfgfile \nCOPIES: $copies THREADS: $threads"
-        time runcpu -c $cfgfile --tune=base --copies=$copies --threads=$threads --reportable --iterations=3 $i
+        time runcpu -c $cfgfile --rebuild --define build_ncpus=$(nproc) --tune=base --copies=$copies --threads=$threads --reportable --iterations=3 $i
       fi
     en=$SECONDS
     echo -e "${i} : Elapsed time - $((en-st)) Seconds."          
@@ -79,6 +78,8 @@ function speccpu_tests()
 function specjbb_tests()
 {
   specjbb_home=$HOME/specjbb15
+  read -p "Is SPECJBB path [ $specjbb_home ] correct (y/n)? " jbbconf
+  [ "$jbbconf" != "y" ] && read -p "Please enter correct path: " specjbb_home
   echo -e "Want to run SPECJBB Test?(y/n)"
   read op
   if [ "$op" = "n" ];then
