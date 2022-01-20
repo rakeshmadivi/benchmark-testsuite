@@ -141,8 +141,8 @@ install_sysbench(){
 install_stream(){
 	
 	binary=multi-strem-scaling
-	stream_dir=$head_dir/stream/stream-scaling
-	git clone --recursive https://github.com/rakeshmadivi/stream-scaling && echo "NOTE: If already existing binaries are not working, it is required to recompile the source."
+	stream_root=$head_dir/stream_modified
+	git clone --recursive https://github.com/rakeshmadivi/stream-scaling $stream_root && echo "NOTE: If already existing binaries are not working, it is required to recompile the source."
 }
 
 install_iperf(){
