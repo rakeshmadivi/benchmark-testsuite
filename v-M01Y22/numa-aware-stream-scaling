@@ -382,7 +382,7 @@ plot_graph=triad-$postfix_str.${plot_outtype}
 NUMA_NODES=$(echo /sys/devices/system/node/node* | wc -w)
 echo
 echo === Testing up to $MAX_CORES cores per NUMA node ===
-echo === Writing results to results/stream_nodeN_threadsM.txt ===
+echo "=== Writing results to $res_dir/stream_node<NodeID>_threads<ThreadID>.txt ==="
 echo === Triad Graph in $plot_graph ===
 echo
 

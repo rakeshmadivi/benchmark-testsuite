@@ -608,6 +608,8 @@ function stream_tests()
 	  stream_exe=numa-aware-stream-scaling
 
 	  stream_dir=stream-modified
+
+	  [ ! -d $stream_dir ] && install_stream #echo "Error: Directory '$stream_dir' not found" && return 1
 	  
 	  [ -f $stream_exe ] && [ ! -L $stream_dir/$stream_exe ] && echo "Creating soft link [ PWD: $PWD ]: $stream_dir/$stream_exe" && ln -s ${PWD}/$stream_exe $stream_dir/$stream_exe
 	  
