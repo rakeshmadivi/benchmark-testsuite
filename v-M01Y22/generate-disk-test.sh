@@ -44,11 +44,22 @@ rwmixwrite=100
 
 stonewall
 
+[READ-BW]
+rw=read
+bs=4k
+
+[WRITE-BW]
+rw=write
+bs=4k
+
+
 [randread]
 rw=randread
+bs=128k
 
 [randwrite]
 rw=randwrite
+bs=128k
 
 [readwrite]
 rw=readwrite
