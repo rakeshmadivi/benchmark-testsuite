@@ -1,13 +1,21 @@
 #!/bin/bash
 
-[ $# -eq 1 ] && block_devs=($(echo $1 | tr ':' '\n' | xargs) )
+[ $# -eq 1 ] && block_devs=($(echo $1 | xargs -n1 -d: | xargs) )
 
 echo  "Provided: $1 [ $block_devs ,${#block_devs[$@]} Devices]"
 
-cat <<EOF | tee disk-benchmark.fio
+
+IODEPTH=(1 2 4 8 16 32 64)
+
+
+for i in ${IODEPTH[@]}
+do
+tname=disk-benchmark-IOD_${IODEPTH}.fio
+
+cat <<EOF | tee $tname
 
 [global]
-name=GEN
+name=$tname
 
 # If block device is specified, skip 'size' option else skip 'filename' & enable 'size' option
 # filename/size option
@@ -26,6 +34,12 @@ direct=1
 [ $direct -eq 1 ] && echo -e "direct=$direct\nsync=0" || echo -e "direct=$direct\nsync=1"
 
 )
+buffered=0
+
+# delay can be range. but for this test we use fixed.
+startdelay=4
+
+ramp_time=5
 
 runtime=5m
 iodepth=1
@@ -52,7 +66,6 @@ bs=4k
 rw=write
 bs=4k
 
-
 [randread]
 rw=randread
 bs=128k
@@ -63,6 +76,16 @@ bs=128k
 
 [readwrite]
 rw=readwrite
+bs=4k
 
 EOF
 
+echo RUNNING: $tname
+
+res_dir=disk-bench-results
+
+mkdir -p $res_dir
+
+fio --output-format=json $res_dir/${tname/.fio/.json}
+
+done
