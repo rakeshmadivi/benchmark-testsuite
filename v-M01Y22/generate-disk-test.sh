@@ -4,13 +4,32 @@
 
 echo  "Provided: $1 [ $block_devs ,${#block_devs[$@]} Devices]"
 
+res_dir=disk-bench-results
+
+mkdir -p $res_dir
+pushd $res_dir
+
+#Preconditioning	
+precon_disk=/dev/nvme0n1
+
+fio --name=PreCondition --ioengine=libaio --filename=${precon_disk} --rw=write --bs=128k --iodepth=8 --numjobs=1 --direct=1 --group_reporting --size=6T
+
+for mix in 0 10 20 30 40 50 60 70 80 90 100; 
+do 
+	echo $mix; 
+	fio --ioengine=sync --filename=${precon_disk} --rw=randrw --rwmixread=$mix --bs=4k  --numjobs=48 --name=foo --direct=1 --group_reporting --runtime=60 --output-format=json | tee M7400_MTFDKCB3T8TDZ_$mix.json; 
+done															
+
+cat M7400*.json | jq -r -c ' [."global options".rwmixread, .jobs[0].read.iops/2980, .jobs[0].write.iops/2980]  | @csv' | tee fio-bench.csv
+
+echo 
+echo Generating Jobfiles of different IODEPTHs...
 
 IODEPTH=(1 2 4 8 16 32 64)
 
-
 for i in ${IODEPTH[@]}
 do
-tname=disk-benchmark-IOD_${IODEPTH}.fio
+tname=disk-benchmark-IOD_${i}.fio
 
 cat <<EOF | tee $tname
 
@@ -82,10 +101,7 @@ EOF
 
 echo RUNNING: $tname
 
-res_dir=disk-bench-results
 
-mkdir -p $res_dir
-
-fio --output-format=json $res_dir/${tname/.fio/.json}
+fio --output-format=json $tname | tee ${tname/.fio/.json}
 
 done
