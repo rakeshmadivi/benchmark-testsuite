@@ -9,18 +9,27 @@ res_dir=disk-bench-results
 mkdir -p $res_dir
 pushd $res_dir
 
-#Preconditioning	
-precon_disk=/dev/nvme0n1
+for d in $(echo /dev/nvme{0..11}n1)
+do
+	#Preconditioning	
+	precon_disk=$d
+	disk_string=${precond_disk//\//_}
 
-fio --name=PreCondition --ioengine=libaio --filename=${precon_disk} --rw=write --bs=128k --iodepth=8 --numjobs=1 --direct=1 --group_reporting --size=6T
+	fio --name=PreCondition --ioengine=libaio --filename=${precon_disk} --rw=write --bs=128k --iodepth=8 --numjobs=1 --direct=1 --group_reporting --size=6T
 
-for mix in 0 10 20 30 40 50 60 70 80 90 100; 
-do 
-	echo $mix; 
-	fio --ioengine=sync --filename=${precon_disk} --rw=randrw --rwmixread=$mix --bs=4k  --numjobs=48 --name=foo --direct=1 --group_reporting --runtime=60 --output-format=json | tee M7400_MTFDKCB3T8TDZ_$mix.json; 
-done															
+	for mix in 0 10 20 30 40 50 60 70 80 90 100; 
+	do 
+		echo $mix; 
+		fio --ioengine=sync --filename=${precon_disk} --rw=randrw --rwmixread=$mix --bs=4k  --numjobs=48 --name=foo --direct=1 --group_reporting --runtime=60 --output-format=json | tee M7400_MTFDKCB3T8TDZ${disk_string}_$mix.json; 
+	done															
 
-cat M7400*.json | jq -r -c ' [."global options".rwmixread, .jobs[0].read.iops/2980, .jobs[0].write.iops/2980]  | @csv' | tee fio-bench.csv
+	cat M7400*${disk_string}*.json | jq -r -c ' [."global options".rwmixread, .jobs[0].read.iops/3576, .jobs[0].write.iops/3576]  | @csv' | tee fio-bench${disk_string}.csv
+
+	echo $precon_disk DONE.
+	echo
+done
+echo Exiting...
+exit
 
 echo 
 echo Generating Jobfiles of different IODEPTHs...
@@ -60,7 +69,7 @@ startdelay=4
 
 ramp_time=5
 
-runtime=5m
+runtime=2m
 iodepth=1
 
 numjobs=1
@@ -73,7 +82,7 @@ write_lat_log=latlog
 group_reporting
 
 # Try writes of (%) 100 95 65 50 35 5 0
-rwmixwrite=100
+#rwmixwrite=100
 
 stonewall
 
