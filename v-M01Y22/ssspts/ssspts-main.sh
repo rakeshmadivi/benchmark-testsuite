@@ -11,7 +11,7 @@ then
 	if [ $execute -eq 1  ]
 	then
 		# Source IOPS Test file
-		source ../ssspts-iops.sh
+		source ssspts-iops.sh
 
 		# START CPU USAGE COLLECTION
 		logit "SSD_IOPS" "Starting CPU Usage collection with NPROC = $NPROC no.of jobs = $usr_numjobs"
@@ -36,7 +36,7 @@ then
 	elif [ $execute -eq 2  ]
 	then
 		# Source TROUGHPUT  Test file
-		source ../ssspts-tp.sh
+		source ssspts-tp.sh
 		
 		# START CPU USAGE COLLECTION
 		logit "SSD_TP" "Starting CPU Usage collection with NPROC = $NPROC no.of jobs = $usr_numjobs"
@@ -53,7 +53,7 @@ then
 	elif [ $execute -eq 3  ]
 	then
 		# Source LATENCY Test file
-		source ../ssspts-latency.sh
+		source ssspts-latency.sh
 		
 		# CHANGE MIX and BLOCK SIZES AS PER LATENCY TEST REQUIREMENTS
 		usr_rwmixwrite="0,35,100"
